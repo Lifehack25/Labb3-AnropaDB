@@ -20,9 +20,7 @@ namespace Lab3_AnropaDB
                     "\n6. Add a new student." +
                     "\n7. Add a new employee to our staff.");
 
-                var menuAnswer = Console.ReadLine();
-                Console.WriteLine();
-
+                var menuAnswer = Console.ReadLine(); Console.WriteLine();
                 switch (menuAnswer)
                 {
                     case "1": Staff.PrintStaff(context); break;
