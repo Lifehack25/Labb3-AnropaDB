@@ -25,24 +25,38 @@ public partial class Grade
 
     public static void PrintGradesSetWithinXDays(SchoolDbContext context)
     {
-        Console.WriteLine("How long would you like the grades to go back? (input a number)");
-        string input = Console.ReadLine();
-        if (int.TryParse(input, out int days))
-        {
-            var gradingList = context.Grades.Where(grade => grade.GradeDate >= DateOnly.FromDateTime(DateTime.Now.AddDays(-days))).ToList();
+        Console.WriteLine("How far back would you like to retrieve grades? (Enter the number of days)");
 
-            foreach (var grade in gradingList)
+        string input = Console.ReadLine()?.Trim();
+        if (int.TryParse(input, out int days) && days > 0)
+        {
+            var targetDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-days));
+
+            // Fetch grades within the specified date range
+            var gradingList = context.Grades
+                .Where(grade => grade.GradeDate >= targetDate)
+                .ToList();
+
+            if (gradingList.Any())
             {
-                Console.WriteLine($"Grade ID: {grade.GradeId}, " +
-                    $"Grade: {grade.Grade1}, " +
-                    $"Date: {grade.GradeDate}, " +
-                    $"Student: {grade.StudentNavigation.FirstName} {grade.StudentNavigation.LastName}, " +
-                    $"Course: {grade.CourseNavigation.CourseName}");
+                foreach (var grade in gradingList)
+                {
+                    Console.WriteLine($"Grade ID: {grade.GradeId}, " +
+                                      $"Grade: {grade.Grade1}, " +
+                                      $"Date: {grade.GradeDate}, " +
+                                      $"Student: {grade.StudentNavigation?.FirstName} {grade.StudentNavigation?.LastName}, " +
+                                      $"Course: {grade.CourseNavigation?.CourseName}");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"No grades found within the last {days} days.");
             }
         }
         else
         {
-            Console.WriteLine("Invalid number entered!");
+            Console.WriteLine("Invalid input. Please enter a positive number.");
         }
     }
+
 }

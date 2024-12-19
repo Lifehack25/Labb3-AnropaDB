@@ -74,5 +74,6 @@ public partial class Student
             Class = studentClass
         });
         context.SaveChanges();
+        Console.WriteLine("Student added successfully!");
     }
 }

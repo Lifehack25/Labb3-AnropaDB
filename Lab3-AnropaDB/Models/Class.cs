@@ -12,19 +12,30 @@ public partial class Class
     public static void PrintStudentsInClass(SchoolDbContext context)
     {
         Console.WriteLine("Please enter the class name you would like to see:");
-        var className = Console.ReadLine();
-        var classToPrint = context.Classes.Where(c => c.ClassName == className).FirstOrDefault();
-        if (classToPrint != null)
+        var className = Console.ReadLine()?.Trim();
+
+        if (string.IsNullOrWhiteSpace(className))
         {
-            Console.WriteLine($"Class: {classToPrint.ClassName}");
-            foreach (var s in classToPrint.Students)
+            Console.WriteLine("Invalid input. Class name cannot be empty.");
+            return;
+        }
+
+        var studentsInClass = context.Students
+            .Where(s => s.Class.ToLower().Contains(className.ToLower()))
+            .ToList();
+
+        if (studentsInClass.Count != 0)
+        {
+            Console.WriteLine($"Class: {className}");
+            foreach (var student in studentsInClass)
             {
-                Console.WriteLine($"Student ID: {s.StudentId}, Name: {s.FirstName} {s.LastName}");
+                Console.WriteLine($"Student ID: {student.StudentId}, Name: {student.FirstName} {student.LastName}");
             }
         }
         else
         {
-            Console.WriteLine("The class you entered does not exist.");
+            Console.WriteLine($"No students found in the class: {className}");
         }
     }
+
 }

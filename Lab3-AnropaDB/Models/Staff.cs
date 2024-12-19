@@ -18,31 +18,72 @@ public partial class Staff
 
     public static void PrintStaff(SchoolDbContext context)
     {
-        Console.WriteLine("1. See all staff\n2. See staff off a particular job title.");
-
-        switch (Console.ReadLine())
+        while (true)
         {
-            case "1":
-                var staff = context.Staff.ToList();
-                foreach (var s in staff)
-                {
-                    Console.WriteLine($"Staff ID: {s.StaffId}, Name: {s.FullName}, Role: {s.Position}");
-                }
-                break;
-            case "2":
-                Console.WriteLine("Please enter the job title you would like to see:");
-                var jobTitle = Console.ReadLine();
-                var staffByJobTitle = context.Staff.Where(s => s.Position == jobTitle).ToList();
-                foreach (var s in staffByJobTitle)
-                {
-                    Console.WriteLine($"Staff ID: {s.StaffId}, Name: {s.FullName}, Role: {s.Position}");
-                }
-                break;
-            default:
-                Console.WriteLine("You have entered an invalid option. Please try again.");
-                break;
+            Console.WriteLine("Interesting, so you want to see a list of our staff. Choose one of the options below: " +
+                "\n1. See all staff" +
+                "\n2. See staff by a particular job title" +
+                "\n3. Exit");
+
+            var input = Console.ReadLine();
+
+            switch (input)
+            {
+                case "1":
+                    var staff = context.Staff.ToList();
+                    if (staff.Count != 0)
+                    {
+                        foreach (var s in staff)
+                        {
+                            Console.WriteLine($"Staff ID: {s.StaffId}, Name: {s.FullName}, Role: {s.Position}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No staff members found in the database.");
+                    }
+                    break;
+
+                case "2":
+                    Console.WriteLine("Please enter the job title you would like to see:");
+                    var jobTitle = Console.ReadLine()?.Trim();
+
+                    if (string.IsNullOrWhiteSpace(jobTitle))
+                    {
+                        Console.WriteLine("Invalid input. Job title cannot be empty.");
+                        break;
+                    }
+
+                    var staffByJobTitle = context.Staff
+                        .Where(s => s.Position.ToLower().Contains(jobTitle.ToLower()))
+                        .ToList();
+
+                    if (staffByJobTitle.Count != 0)
+                    {
+                        foreach (var s in staffByJobTitle)
+                        {
+                            Console.WriteLine($"Staff ID: {s.StaffId}, Name: {s.FullName}, Role: {s.Position}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"No staff members found with the job title: {jobTitle}");
+                    }
+                    break;
+
+                case "3":
+                    Console.WriteLine("Exiting the staff viewer. Goodbye!");
+                    return;
+
+                default:
+                    Console.WriteLine("You have entered an invalid option. Please try again.");
+                    break;
+            }
+
+            Console.WriteLine("\nPress any key to continue...");
+            Console.ReadKey();
+            Console.Clear();
         }
-        context.SaveChanges();
     }
 
     public static void AddNewStaff(SchoolDbContext context)
@@ -67,5 +108,6 @@ public partial class Staff
             Position = position
         });
         context.SaveChanges();
+        Console.WriteLine("Staff member added successfully.");
     }
 }

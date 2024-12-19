@@ -21,6 +21,7 @@ namespace Lab3_AnropaDB
                     "\n7. Add a new employee to our staff.");
 
                 var menuAnswer = Console.ReadLine();
+                Console.WriteLine();
 
                 switch (menuAnswer)
                 {
